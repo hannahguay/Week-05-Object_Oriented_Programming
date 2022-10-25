@@ -38,75 +38,137 @@ class Team {
 //the Menu class creates a class that prompts the user with the menu options. This class also holds all of the code to execute each menu option.
 
 class Menu {
-    constructor() {
-        this.teams = [];
-        this.selectedTeams = null;
+  constructor() {
+    this.teams = [];
+    this.selectedTeam = null;
+  }
+
+  // the start function will use a switch to correlate the user's input with the function it should execute (ie. if user input = 1, then execute the createTeam function)
+  start() {
+    let selection = this.showMainMenuOptions();
+
+    //points to code to execute for each case, if the selection is 0, then alert "Goodbye"
+    while (selection != 0) {
+      switch (selection) {
+        case "1":
+          this.createTeam();
+          break;
+        case "2":
+          this.viewTeam();
+          break;
+        case "3":
+          this.deleteTeam();
+          break;
+        case "4":
+          this.displayTeam();
+          break;
+        default:
+          selection = 0;
+      }
+      selection = this.showMainMenuOptions;
     }
 
-    // the start function will use a switch to correlate the user's input with the function it should execute (ie. if user input = 1, then execute the createTeam function)
-    start () {
-        let selection = this.showMainMenuOptions ();
-
-        //points to code to execute for each case, if the selection is 0, then alert "Goodbye"
-        while (selection != 0) {
-            switch (selection) {
-                case "1":
-                    this.createTeam();
-                    break;
-                case "2":
-                    this.viewTeam();
-                    break;
-                case "3":
-                    this.deleteTeam();
-                    break;
-                case "4":
-                    this.displayTeam();
-                    break;
-                default:
-                    selection = 0;
-            }
-        selection = this.showMainMenuOptions;
-        }
-
-      alert("Goodbye!")
-    }   
-    //this function prompts the user with the main menu options (can I move this above the switch case block?)
-    showMainMenuOptions () {
-        return prompt(`
+    alert("Goodbye!");
+  }
+  //this function prompts the user with the main menu options (QUESTION: can I move this above the switch case block? In general can I move these blocks around?)
+  showMainMenuOptions() {
+    return prompt(`
         00) exit
         01) create team
         02) view team
         03) delete team
         04) display team
         `);
-    }
+  }
 
-    //this function prompts the user with the team menu options
-    //confused how teamInfo is only referenced in this one block. Where does it pull teamInfo from? 
-    showTeamMenuOptions (teamInfo) {
-        return prompt(`
+  //this function prompts the user with the team menu options
+  //QUESTION: confused how teamInfo is only referenced in this one block. Where does it pull teamInfo from?
+  showTeamMenuOptions(teamInfo) {
+    return prompt(`
         00) back
         01) create a team
         02) delete a team
 
         -----------------
         ${teamInfo}
-        `)
-    }
+        `);
+  }
 
-    //this function creates a variable from user input to use as a team's name
-    createTeam () {
-        let name = prompt('What is your team name?');
-        this.teams.push(new Team(name))
-    }
+  //this function creates a variable from user input to use as a team's name, then runs the Team class function on it and pushes the result to the to the empty teams array
+  createTeam() {
+    let name = prompt("What is your team name?");
+    this.teams.push(new Team(name));
+  }
 
-    viewTeam () {
-        let index = prompt("Enter the index of the team you wish to view:");
-        if (index > -1 && this.teams.length) { //
+  //this function creates a variable from user input and loops through
+  viewTeam() {
+    let index = prompt("Enter the index of the team you wish to view:");
 
-        }
+    //this if statement runs through the teams array, and if the user's input is > -1 and equal (?) to the team array's length, then we find the specified team and describe it
+    if (index > -1 && this.teams.length) {
+      //QUESTION: is it asking if index is > -1 and also if index is > this.teams.length, or if it is equal to it?
+      this.selectedTeam = this.teams[index];
+      let description = "Team Name: " + this.selectedTeam.name + "\n";
+
+      //this loop runs through the selected team's players and adds formatting, the players' names and the players' positions.
+      for (let i = 0; i < this.selectedTeam.players.length; i++) {
+        description +=
+          i +
+          ") " +
+          this.selectedTeam.players[i].name +
+          " - " +
+          this.selectedTeam.players[i].position +
+          "\n";
+      }
+
+      //QUESTION: unsure exactly what this is doing:
+      let selection = this.showMainMenuOptions(description);
+      switch (selection) {
+        case "1":
+          this.createPlayer();
+          break;
+        case "2":
+          this.deletePlayer();
+      }
     }
+  }
+
+  ////this function creates a local variable, filled in by user input, and uses a splice method to remove the indicated team
+  deleteTeam() {
+    let index = prompt("Enter the index of the team you wish to delete:");
+    if (index > -1 && index < this.teams.length) {
+      this.teams.splice(index, 1);
+    }
+  }
+
+  //this function creates two local variables, filled in by user input, and pushes those to the Player array
+  createPlayer() {
+    let name = prompt("Enter name for new player:");
+    let position = prompt("Enter position for new player:");
+    this.selectedTeam.players.push(new Player(name, position));
+  }
+
+  //this function creates a local variable, filled in by user input, and uses a splice method to remove the indicated player
+  deletePlayer() {
+    let index = prompt("Enter the index of the player you wish to delete");
+    if (index > -1 && index < this.selectedTeam.players.length) {
+      this.selectedTeam.players.splice(index, 1);
+    }
+  }
+  //this function creates an empty local variable, runs a for loop through the length of the teams array, and adds formatting and the teams' names
+  displayTeams() {
+    let teamString = "";
+    for (let i = 0; i < this.teams.length; i++) {
+        // why are we adding i to the team string if i is a local variable?
+      teamString += i + ") " + this.teams[i].name + "\n";
+    }
+    alert(teamString);
+  }
 }
+
+    let menu = new Menu();
+    menu.start();
+
 
 
 
