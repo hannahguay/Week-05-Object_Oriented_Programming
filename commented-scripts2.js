@@ -2,9 +2,9 @@
 //this class won't run anything until later in the code when we have created the interactive menu
 
 class Player {
-    constructor (name, position) {
-        this.name = name;
-        this.position = position;
+    constructor (nameValue, positionValue) { //information that you insert through a prompt or something, pass that info into respective properties. Having parameter in there allows you to dynamically update data
+        this.name = nameValue;
+        this.position = positionValue;
     }
     describe () {
         return `${this.name} plays ${this.position}.`;
@@ -16,31 +16,33 @@ class Player {
 //this class won't run anything until later in the code when we have created the interactive menu
 
 class Team {
-    constructor (name) {
-        this.name = name;
-        this.players = [];
-    }
-    
-    addPlayer (player) {
-      if (player instanceof Player) {
-        this.players.push(player);
-      } else {
-        throw new Error(`You can only add an instance of Player. Argument is not a player: ${player}.`);
-      }
-    }
+  constructor(name) {
+    this.name = name;
+    this.players = [];
+  }
 
-    describe () {
-        return `${this.name} has ${this.players.length} players.`;
+  addPlayer(player) {
+    if (player instanceof Player) {
+      this.players.push(player);
+    } else {
+      //QUESTION: is Error a built in class, because it isn't defined anywhere else. Entire method never got implemented. 
+      throw new Error(
+        `You can only add an instance of Player. Argument is not a player: ${player}.`
+      );
     }
-    
+  }
+  //Could commment this out to see that it doesn't affect code at all.
+  describe() {
+    return `${this.name} has ${this.players.length} players.`;
+  }
 }
 
 //the Menu class creates a class that prompts the user with the menu options. This class also holds all of the code to execute each menu option.
 
 class Menu {
-  constructor() {
+  constructor() { //QUESTION: why is this constructor allowed to be empty (no parameters?). In general, when to leave them empty or give them parameters. Don't need to take in info, just need to define a couple things. 
     this.teams = [];
-    this.selectedTeam = null;
+    this.selectedTeam = null; //QUESTION: what does it mean to set something to null? why choose that instead of 0? //almost like placeholder information
   }
 
   // the start function will use a switch to correlate the user's input with the function it should execute (ie. if user input = 1, then execute the createTeam function)
@@ -65,7 +67,7 @@ class Menu {
         default:
           selection = 0;
       }
-      selection = this.showMainMenuOptions;
+      selection = this.showMainMenuOptions(); // QUESTION: what does this line do? //run it after the code is completed. Sort of like a loop, will come back around to run it again
     }
 
     alert("Goodbye!");
@@ -82,8 +84,8 @@ class Menu {
   }
 
   //this function prompts the user with the team menu options
-  //QUESTION: confused how teamInfo is only referenced in this one block. Where does it pull teamInfo from?
-  showTeamMenuOptions(teamInfo) {
+  //QUESTION: confused how teamInfo is only referenced in this one block. Where does it pull teamInfo from? //parameter is a nickname for what is coming into it 
+  showTeamMenuOptions(teamInfo) { //teamInfo is an alias (it is equal to the description data)
     return prompt(`
         00) back
         01) create a team
@@ -105,7 +107,7 @@ class Menu {
     let index = prompt("Enter the index of the team you wish to view:");
 
     //this if statement runs through the teams array, and if the user's input is > -1 and equal (?) to the team array's length, then we find the specified team and describe it
-    if (index > -1 && this.teams.length) {
+    if (index > -1 && this.teams.length) { //prevent a scenario where there isn't a team
       //QUESTION: is it asking if index is > -1 and also if index is > this.teams.length, or if it is equal to it?
       this.selectedTeam = this.teams[index];
       let description = "Team Name: " + this.selectedTeam.name + "\n";
@@ -122,7 +124,7 @@ class Menu {
       }
 
       //QUESTION: unsure exactly what this is doing:
-      let selection = this.showMainMenuOptions(description);
+      let selection = this.showTeamMenuOptions(description);
       switch (selection) {
         case "1":
           this.createPlayer();
