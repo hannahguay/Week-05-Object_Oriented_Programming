@@ -9,21 +9,31 @@ class Task {
 class TaskList {
     constructor(name) {
         this.name = name;
-        this.taskList = [];
+        this.tasks = [];
     }
     //this function determines if the task value is an instance of the Task class, if it is, then it pushes it to the taskList array
     addTask(task) {
-        if (task instanceof TaskList) {
-            this.taskList.push(new (task));
+        if (task instanceof Task) {
+            this.tasks.push(new (task));
         } else {
             //creates an exception to terminate the program and print an error message if user input was not an instance of the Task class
             throw new Error(`Argument is not a task: ${task}.`);
         }
     }
+
     //this function prints the name of the task and the name of the taskList list it is on
-    //QUESTION: can this only be called inside this class? how would I call it 
     describe() {
-        return `This ${this.task} is on this ${this.taskList} list.`;
+      let listName = this.name;
+      
+      let list = " ";
+        for (let i = 0; i < this.tasks.length; i++) {
+          if (i < this.tasks.length -1) {
+            list += this.tasks[i].name + ", ";
+          } else {
+            list += this.tasks[i].name;
+          }
+        }
+        return `${listName} - ${list}`;
     }
 }
 
@@ -31,7 +41,7 @@ class TaskList {
 class Menu {
   //this constructor creates an empty array to hold user input for TaskList names
   constructor() {
-    this.taskLists = [];
+    this.toDoList = [];
     this.selectedTaskList = null;
   }
   //this function creates the cases for what user input we may receive and what function to run in response to that input
@@ -71,7 +81,6 @@ class Menu {
         `);
   }
   //this function prompts users to select an option by typing in a number. It also shows the name of the task list users are in
-  //QUESTION: where is taskListInfo supposed to pull info from? i tried using the describe function above
   showTaskListMenuOptions(taskListInfo) {
     return prompt(`
             0) Back
@@ -81,13 +90,11 @@ class Menu {
             ${taskListInfo}
         `);
   }
-  //QUESTION: should there be something to bring us back to the mainMenuOptions at the end of the showTaskListMenuOptions function?
-  //QUESTION: how are we getting back to the menu in general?
 
   //this function prompts users to create a name for the task list and pushes the users input to the taskLists array
   createTaskList() {
     let name = prompt("Enter a name for your task list");
-    this.taskLists.push(new TaskList(name));
+    this.toDoList.push(new TaskList(name));
   }
 
   //this function prompts user for the index of the TaskList array they'd like to view, then shows information about that list
@@ -95,19 +102,13 @@ class Menu {
     let index = prompt("Enter the index of the task list you wish to view:");
 
     //creates a variable called selectedTaskList which is equal to the index from the user input
-    if (index > -1 && this.taskLists.length) {
-      this.selectedTaskList = this.taskLists[index];
-      let description = "Task list name: " + this.selectedTaskList.name + "\n";
-
-      //loops through the length of the taskList array and adds a description including the taskList name and some formatting
-      for (let i = 0; i < this.selectedTaskList.taskList.length; i++) {
-        //QUESTION: why are we adding i to the description?
-        description +=
-          i + ") " + this.selectedTaskList.taskLists[index].name + "\n";
-      }
-
+    if (index > -1 && this.toDoList.length) {
+      this.selectedTaskList = this.toDoList[index];
+    
       //function prompts users to select an option by typing in a number
-      let selection = this.showTaskListMenuOptions();
+      let taskListInfo = `${this.selectedTaskList.describe()} `
+  
+      let selection = this.showTaskListMenuOptions(taskListInfo);
       switch (selection) {
         case "1":
           this.createTask();
@@ -118,20 +119,17 @@ class Menu {
     }
   }
 
+  //function prompts user to enter a name for a task, and pushes that name to the tasks array
   createTask() {
     let name = prompt("Enter the name of your task:");
-    //QUESTION: getting stuck on line below, should there be something to kick us back to the menu options?
-    //says this.selectedTaskList.push is not a function
-    this.selectedTaskList.push(new Task(name));
+    this.selectedTaskList.tasks.push(new Task(name));
   }
 
   //function prompts user for index of the task to be deleted and uses the splice method to to remove the indicated task
-  //QUESTION inside function
   deleteTask() {
     let index = prompt("Enter the index of the task you completed:");
-    //QUESTION: why does the index have to be shorter than the length of the taskLists array? couldn't it be equal to?
-    if (index > -1 && index < this.taskLists.length) {
-      this.taskLists.splice(index, 1);
+    if (index > -1 && index < this.toDoList.length) {
+      this.selectedTaskList.tasks.splice(index, 1);
     }
   }
   //function prompts user for index of taskList to be deleted and uses the splice method to to remove the indicated taskList
@@ -139,21 +137,22 @@ class Menu {
     let index = prompt(
       `Nice work completing your task list! Enter the index of the task list you've completed to delete it:`
     );
-    if (index > -1 && index < this.taskLists.length) {
-      this.taskList.splice(index, 1);
+    if (index > -1 && index < this.toDoList.length) {
+      this.toDoList.splice(index, 1);
     }
   }
 
   //function creates an empty variable, then populates it with the results of a loop that loops through the taskLists array and adds formatting
-  //QUESTION: how would I make an alert if there are no task lists to be displayed?
   displayTaskLists() {
     let displayTaskLists = "";
-    for (let i = 0; i < this.taskLists.length; i++) {
-      displayTaskLists += [i] + ") " + this.taskLists[i].name + "\n";
+    for (let i = 0; i < this.toDoList.length; i++) {
+      displayTaskLists += (i + 1) + ") " + this.toDoList[i].describe() + "\n";
     }
     alert(displayTaskLists);
   }
 }
 
+//create an instance of the menu class
 let menu = new Menu();
+//call the menu function
 menu.start();
